@@ -10,6 +10,7 @@ import AnalysisLoading from "@/components/AnalysisLoading";
 import TemperatureGauge from "@/components/TemperatureGauge";
 import type { SentimentResult } from "@/types/analysis";
 import type { NaverSearchItem, NaverSearchResponse } from "@/types/naver";
+import type { MapCoordinate } from "@/types/map";
 import { AlertCircle } from "lucide-react";
 
 interface SearchResultsProps {
@@ -22,6 +23,7 @@ export default function SearchResults({ query }: SearchResultsProps) {
   const [step, setStep] = useState<LoadingStep>("idle");
   const [result, setResult] = useState<SentimentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [mapCenter, setMapCenter] = useState<MapCoordinate>({ lat: 37.5665, lng: 126.978 });
 
   const runAnalysis = useCallback(async () => {
     setStep("collecting");
@@ -80,6 +82,17 @@ export default function SearchResults({ query }: SearchResultsProps) {
   }, [query]);
 
   useEffect(() => {
+    fetch(`/api/geocode?q=${encodeURIComponent(query)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.lat && data.lng) {
+          setMapCenter({ lat: data.lat, lng: data.lng });
+        }
+      })
+      .catch(() => {});
+  }, [query]);
+
+  useEffect(() => {
     async function checkCacheAndRun() {
       try {
         const cacheRes = await fetch(
@@ -106,7 +119,7 @@ export default function SearchResults({ query }: SearchResultsProps) {
     <div className="max-w-screen-lg mx-auto px-4 py-5 space-y-5">
       <SearchBar defaultValue={query} size="sm" />
 
-      <KakaoMap className="w-full h-48 sm:h-64 rounded-2xl bg-gray-200 border border-gray-200" />
+      <KakaoMap center={mapCenter} className="w-full h-48 sm:h-64 rounded-2xl bg-gray-200 border border-gray-200" />
 
       <section>
         <h2 className="text-lg font-bold text-gray-900 mb-4">
