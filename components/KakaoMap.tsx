@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MapCoordinate } from "@/types/map";
 
 interface KakaoMapProps {
@@ -25,32 +25,50 @@ export default function KakaoMap({
   className,
 }: KakaoMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
+  const [sdkReady, setSdkReady] = useState(false);
 
+  // SDK 로드 감지
   useEffect(() => {
-    if (!mapRef.current || typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
-    const initMap = () => {
-      window.kakao.maps.load(() => {
-        const position = new window.kakao.maps.LatLng(center.lat, center.lng);
-        new window.kakao.maps.Map(mapRef.current!, {
-          center: position,
-          level: 5,
+    const checkSdk = () => {
+      if (window.kakao?.maps) {
+        window.kakao.maps.load(() => {
+          setSdkReady(true);
         });
-      });
+        return true;
+      }
+      return false;
     };
 
-    if (window.kakao?.maps) {
-      initMap();
-    } else {
-      const script = document.querySelector<HTMLScriptElement>(
-        'script[src*="dapi.kakao.com"]'
-      );
-      if (script) {
-        script.addEventListener("load", initMap);
-        return () => script.removeEventListener("load", initMap);
+    if (checkSdk()) return;
+
+    // SDK가 아직 로드되지 않았으면 폴링
+    const interval = setInterval(() => {
+      if (checkSdk()) {
+        clearInterval(interval);
       }
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // 지도 생성 및 center 변경 처리
+  useEffect(() => {
+    if (!sdkReady || !mapRef.current) return;
+
+    const position = new window.kakao.maps.LatLng(center.lat, center.lng);
+
+    if (!mapInstanceRef.current) {
+      mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, {
+        center: position,
+        level: 5,
+      });
+    } else {
+      (mapInstanceRef.current as { setCenter: (pos: unknown) => void }).setCenter(position);
     }
-  }, [center]);
+  }, [sdkReady, center]);
 
   return (
     <div
