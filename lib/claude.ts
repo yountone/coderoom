@@ -42,7 +42,13 @@ JSON만 반환해주세요.`,
     throw new Error("Unexpected response type from Claude");
   }
 
-  const parsed = JSON.parse(content.text);
+  let jsonText = content.text.trim();
+  const fenceMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenceMatch) {
+    jsonText = fenceMatch[1].trim();
+  }
+
+  const parsed = JSON.parse(jsonText);
 
   return {
     neighborhood,
