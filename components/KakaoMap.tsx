@@ -27,17 +27,29 @@ export default function KakaoMap({
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!mapRef.current || typeof window === "undefined" || !window.kakao?.maps) {
-      return;
-    }
+    if (!mapRef.current || typeof window === "undefined") return;
 
-    window.kakao.maps.load(() => {
-      const position = new window.kakao.maps.LatLng(center.lat, center.lng);
-      new window.kakao.maps.Map(mapRef.current!, {
-        center: position,
-        level: 5,
+    const initMap = () => {
+      window.kakao.maps.load(() => {
+        const position = new window.kakao.maps.LatLng(center.lat, center.lng);
+        new window.kakao.maps.Map(mapRef.current!, {
+          center: position,
+          level: 5,
+        });
       });
-    });
+    };
+
+    if (window.kakao?.maps) {
+      initMap();
+    } else {
+      const script = document.querySelector<HTMLScriptElement>(
+        'script[src*="dapi.kakao.com"]'
+      );
+      if (script) {
+        script.addEventListener("load", initMap);
+        return () => script.removeEventListener("load", initMap);
+      }
+    }
   }, [center]);
 
   return (
