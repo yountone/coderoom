@@ -7,6 +7,7 @@ import SentimentCardList from "@/components/SentimentCardList";
 import KeywordTags from "@/components/KeywordTags";
 import KakaoMap from "@/components/KakaoMap";
 import AnalysisLoading from "@/components/AnalysisLoading";
+import TemperatureGauge from "@/components/TemperatureGauge";
 import type { SentimentResult } from "@/types/analysis";
 import type { NaverSearchItem, NaverSearchResponse } from "@/types/naver";
 import { AlertCircle } from "lucide-react";
@@ -140,6 +141,15 @@ export default function SearchResults({ query }: SearchResultsProps) {
 
         {step === "done" && result && <SentimentSummary result={result} />}
       </section>
+
+      {step === "done" && result?.temperatureIndex && (
+        <section>
+          <h3 className="text-base font-semibold text-gray-900 mb-3">
+            온도 지수
+          </h3>
+          <TemperatureGauge temperatureIndex={result.temperatureIndex} />
+        </section>
+      )}
 
       {step === "done" && result && (
         <>

@@ -11,6 +11,18 @@ export interface HotIssue {
   relatedPosts: number;
 }
 
+export interface TemperatureFactor {
+  name: string;
+  score: number;
+  description: string;
+}
+
+export interface TemperatureIndex {
+  overallTemperature: number;
+  factors: TemperatureFactor[];
+  summary: string;
+}
+
 export interface SentimentResult {
   neighborhood: string;
   overallSentiment: "positive" | "negative" | "neutral";
@@ -18,6 +30,7 @@ export interface SentimentResult {
   summary: string;
   keywords: KeywordItem[];
   hotIssues: HotIssue[];
+  temperatureIndex?: TemperatureIndex;
   totalPostsAnalyzed: number;
   analyzedAt: string;
 }
