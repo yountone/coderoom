@@ -6,9 +6,9 @@ interface KeywordTagsProps {
 }
 
 const sentimentColor = {
-  positive: "bg-secondary/10 text-secondary border-secondary/20",
-  negative: "bg-negative/10 text-negative border-negative/20",
-  neutral: "bg-neutral/10 text-neutral border-neutral/20",
+  positive: "bg-green-50 text-secondary border-green-200",
+  negative: "bg-red-50 text-negative border-red-200",
+  neutral: "bg-gray-50 text-gray-600 border-gray-200",
 };
 
 export default function KeywordTags({ keywords }: KeywordTagsProps) {
@@ -20,12 +20,12 @@ export default function KeywordTags({ keywords }: KeywordTagsProps) {
         <span
           key={kw.keyword}
           className={cn(
-            "inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border",
+            "inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border",
             sentimentColor[kw.sentiment]
           )}
         >
           {kw.keyword}
-          <span className="opacity-60">({kw.count})</span>
+          <span className="opacity-50 font-medium">{kw.count}</span>
         </span>
       ))}
     </div>

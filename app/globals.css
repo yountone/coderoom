@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
-  --foreground: #171717;
+  --background: #F2F3F6;
+  --foreground: #212124;
 }
 
 body {
@@ -12,4 +12,10 @@ body {
   background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* 당근 스타일 selection */
+::selection {
+  background-color: #FFE2D2;
+  color: #212124;
 }

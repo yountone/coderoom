@@ -17,29 +17,36 @@ export default function SentimentSummary({ result }: SentimentSummaryProps) {
   const Icon = config.icon;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm space-y-4">
+    <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Icon className={cn("w-5 h-5", config.color)} />
-          <span className={cn("text-sm font-semibold", config.color)}>
-            {config.label}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className={cn("h-full rounded-full", config.bg)}
-              style={{ width: `${result.sentimentScore}%` }}
-            />
+          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center",
+            result.overallSentiment === "positive" && "bg-green-50",
+            result.overallSentiment === "negative" && "bg-red-50",
+            result.overallSentiment === "neutral" && "bg-gray-100",
+          )}>
+            <Icon className={cn("w-4 h-4", config.color)} />
           </div>
-          <span className="text-xs text-gray-500 font-medium">{result.sentimentScore}점</span>
+          <div>
+            <span className={cn("text-sm font-bold", config.color)}>
+              {config.label}
+            </span>
+            <p className="text-xs text-gray-500">{result.sentimentScore}점 / 100점</p>
+          </div>
+        </div>
+        <div className="w-28 h-2.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className={cn("h-full rounded-full transition-all", config.bg)}
+            style={{ width: `${result.sentimentScore}%` }}
+          />
         </div>
       </div>
 
       <p className="text-sm text-gray-700 leading-relaxed">{result.summary}</p>
 
-      <div className="flex items-center gap-3 text-xs text-gray-400">
+      <div className="flex items-center gap-3 text-xs text-gray-500 pt-1 border-t border-gray-100">
         <span>게시글 {result.totalPostsAnalyzed}건 분석</span>
+        <span className="text-gray-300">|</span>
         <span>
           {new Date(result.analyzedAt).toLocaleDateString("ko-KR", {
             month: "long",

@@ -29,7 +29,6 @@ export default function SearchResults({ query }: SearchResultsProps) {
     setResult(null);
 
     try {
-      // 1. 네이버 API로 게시글 수집
       const naverRes = await fetch(`/api/naver?q=${encodeURIComponent(query)}`);
       if (!naverRes.ok) {
         const err = await naverRes.json();
@@ -48,7 +47,6 @@ export default function SearchResults({ query }: SearchResultsProps) {
         throw new Error("관련 게시글을 찾을 수 없습니다. 다른 동네 이름으로 검색해보세요.");
       }
 
-      // 2. Claude API로 감성 분석
       setStep("analyzing");
 
       const analyzeRes = await fetch("/api/analyze", {
@@ -66,7 +64,6 @@ export default function SearchResults({ query }: SearchResultsProps) {
       setResult(analysisResult);
       setStep("done");
 
-      // 3. 캐시 저장 (백그라운드, 실패해도 무시)
       fetch("/api/cache", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,7 +80,6 @@ export default function SearchResults({ query }: SearchResultsProps) {
   }, [query]);
 
   useEffect(() => {
-    // 페이지 진입 시 캐시 확인 후 분석 실행
     async function checkCacheAndRun() {
       try {
         const cacheRes = await fetch(
@@ -107,14 +103,14 @@ export default function SearchResults({ query }: SearchResultsProps) {
   }, [query, runAnalysis]);
 
   return (
-    <div className="max-w-screen-lg mx-auto px-4 py-4 space-y-4">
+    <div className="max-w-screen-lg mx-auto px-4 py-5 space-y-5">
       <SearchBar defaultValue={query} size="sm" />
 
-      <KakaoMap />
+      <KakaoMap className="w-full h-48 sm:h-64 rounded-2xl bg-gray-200 border border-gray-200" />
 
       <section>
-        <h2 className="text-lg font-bold text-gray-900 mb-3">
-          &ldquo;{query}&rdquo; 민심 리포트
+        <h2 className="text-lg font-bold text-gray-900 mb-4">
+          <span className="text-carrot-600">{query}</span> 민심 리포트
         </h2>
 
         {(step === "collecting" || step === "analyzing") && (
@@ -122,15 +118,15 @@ export default function SearchResults({ query }: SearchResultsProps) {
         )}
 
         {step === "error" && (
-          <div className="bg-white rounded-2xl border border-negative/20 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-red-100 p-5">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-negative shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-gray-900 font-medium">분석 실패</p>
+                <p className="text-sm text-gray-900 font-semibold">분석 실패</p>
                 <p className="text-sm text-gray-600 mt-1">{error}</p>
                 <button
                   onClick={runAnalysis}
-                  className="mt-3 text-sm text-primary font-medium hover:underline"
+                  className="mt-3 text-sm text-carrot-600 font-semibold hover:underline"
                 >
                   다시 시도
                 </button>
@@ -144,9 +140,7 @@ export default function SearchResults({ query }: SearchResultsProps) {
 
       {step === "done" && result?.temperatureIndex && (
         <section>
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
-            온도 지수
-          </h3>
+          <h3 className="text-base font-bold text-gray-900 mb-3">온도 지수</h3>
           <TemperatureGauge temperatureIndex={result.temperatureIndex} />
         </section>
       )}
@@ -154,23 +148,19 @@ export default function SearchResults({ query }: SearchResultsProps) {
       {step === "done" && result && (
         <>
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              주요 키워드
-            </h3>
+            <h3 className="text-base font-bold text-gray-900 mb-3">주요 키워드</h3>
             <KeywordTags keywords={result.keywords} />
           </section>
 
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              핫이슈
-            </h3>
+            <h3 className="text-base font-bold text-gray-900 mb-3">핫이슈</h3>
             <SentimentCardList issues={result.hotIssues} />
           </section>
         </>
       )}
 
       {step === "idle" && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-200 p-5">
           <p className="text-sm text-gray-500 text-center py-6">
             분석을 준비하고 있습니다...
           </p>
