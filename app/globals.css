@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #F2F3F6;
+  --background: #F7F8FA;
   --foreground: #212124;
 }
 
@@ -14,7 +14,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 당근 스타일 selection */
 ::selection {
   background-color: #FFE2D2;
   color: #212124;

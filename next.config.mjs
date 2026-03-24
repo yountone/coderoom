@@ -4,7 +4,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "dapi.kakao.com",
+        hostname: "**.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "k.kakaocdn.net",
+      },
+      {
+        protocol: "http",
+        hostname: "k.kakaocdn.net",
       },
     ],
   },
